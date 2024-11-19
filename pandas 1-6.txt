@@ -1,0 +1,176 @@
+pandas
+
+
+import pandas as pd
+orders = pd.read_table("http://bit.ly/movieusers")
+print("Overview of dataframe")
+print(orders.head())
+print("Shape: ",orders.shape)
+user_cols = ['user_id','age','gender','occupation','zip_code']
+users = pd.read_table("http://bit.ly/movieusers",sep='|',
+header=None, names=user_cols)
+print("Dataframe after modifying the default parameter values for
+read_table:")
+print(users.head())
+
+
+
+ufo = pd.read_csv("http://bit.ly/uforeports")
+print("Overview of UFO data reports:")
+print(ufo.head())
+#series
+print("City series(sorted):")
+print(ufo.City.sort_values())
+ufo['Location']=ufo.City + ',' + ufo.State
+print("After creating a new 'Location' series:")
+print(ufo.head())
+print("\nCalculate summary statistics:")
+print(ufo.describe())
+print("\nColumn names of ufo dataframe:\n", ufo.columns)
+#rename two of the columns by using the 'rename' method
+ufo.rename(columns={'Colors Reported':'Colors_Reported','Shape
+Reported':'Shape_Reported'},inplace=True)
+print("\nColumn name of ufo dataframe after renaming two column
+names:\n",ufo.columns)
+#rename multiple columns at once
+ufo.drop(['City','State'], axis=1, inplace=True)
+print("\nColumn name of ufo dataframe after removing two
+columns(city,state):\n",ufo.columns)
+#remove multiple rows at once(axis=0 refers to rows)
+ufo.drop([0,1], axis=0, inplace=True)
+print("\nufo dataframe after deleting first two rows:\n",ufo.head())
+
+
+
+
+#read a dataset of top-rated IMDb movies into a dataframe
+movies = pd.read_csv('http://bit.ly/imdbratings')
+print("Dataframe of top-rated IMDb movies:")
+print(movies.head())
+print("\nDifferent ways to filter rows of a pandas Dataframe by
+column value:")
+print("Example: Filter rows to only show movies with a duration of
+atleast 200 minutes")
+print("1.Using for loop:-")
+#create a list in which elements refers to a dataframe row: True if
+the row satisfies the condition, False otherwise
+booleans = []
+for length in movies.duration:
+ if length>=200:
+ booleans.append(True)
+ else:
+ booleans.append(False)
+is_long = pd.Series(booleans)
+print(is_long.head())
+print("2.Broadcasting:-")
+print(movies[movies.duration>=200])
+print("3.Using loc method:-")
+print(movies.loc[movies.duration>=200])
+
+
+
+
+#read a dataset of Chipotle orders into a DataFrame
+orders = pd.read_table('http://bit.ly/chiporders')
+print("Dataframe:")
+print(orders.head())
+print("\nString methods in pandas:-")
+print("\nitem_name series(in uppercase):")
+print(orders.item_name.str.upper().head())
+print("\nCheck for a substring'Chicken' in the given dataframe:")
+print(orders[orders.item_name.str.contains('Chicken')].head())
+print()
+#many pandas string methods support regular expressions(regex)
+print("replace []")
+print(orders.choice_description.str.replace(r"[\[\]]",'',regex=True)
+.head())
+print()
+print("Examine the data type of each Series:")
+print(orders.dtypes)
+print()
+print("Dataframe after replacing 'S' and converting string to float
+of 'item_price' series:")
+print(orders.item_price.str.replace('$',"").astype(float))
+
+
+
+#read a dataset of Chipotle orders into a DataFrame
+drinks = pd.read_table('http://bit.ly/drinksbycountry',sep=',')
+print("Dataframe:")
+print(drinks.columns)
+print()
+print("Mean beer servings across the entire
+dataset:",drinks.beer_servings.mean())
+print("Mean beer servings just for countries in
+Africa:",drinks[drinks.continent=='Africa'].beer_servings.mean())
+print()
+print("Aggregate functions used with groupby:")
+print()
+print("Mean beer servings for each
+continent:",drinks.groupby('continent').beer_servings.mean())
+print("Maximum beer servings for each
+continent:",drinks.groupby('continent').beer_servings.max())
+print("Multiple aggregation functions can be applied
+simultaneously:")
+print(drinks.groupby('continent').beer_servings.agg(['count','mean',
+'min','max']))
+#specifying a column to which the aggregation function should be
+applied is not required
+drinks.groupby('continent').mean(numeric_only=True)
+#allow plots to appear in the notebook
+%matplotlib inline
+#side-by-side bar plot of the DataFrame directly above
+drinks.groupby('continent').mean(numeric_only=True).plot(kind='bar')
+drinks.groupby('continent').mean(numeric_only=True).plot(kind='bar')
+
+
+
+
+ufo = pd.read_csv('http://bit.ly/uforeports')
+print(ufo.isnull().tail())
+print(ufo.notnull().tail())
+print(ufo.isnull().sum())
+print(ufo.shape)
+# if 'all' values are missing in a row, then drop that row (none are
+dropped in this case)
+print(ufo.dropna(how='all').shape)
+print(ufo.dropna (subset=['City', 'Shape Reported'],
+how='any').shape)
+print(ufo['Shape Reported'].value_counts().head())
+#fll in missing values with a specifed value
+print(ufo['Shape Reported'].fillna(value='VARIOUS', inplace=True))
+# confrm that the missing values were flled in
+print(ufo['Shape Reported'].value_counts().head())
+drinks = pd.read_csv('http://bit.ly/drinksbycountry')
+print(drinks.head())
+# every DataFrame has an index (sometimes called the "row labels")
+print(drinks.index)
+# index and columns both default to integers if you don't defne them
+print(pd.read_table('http://bit.ly/movieusers', header=None,
+sep='|').head())
+# identifcation: index remains with each row when fltering the
+DataFrame
+print(drinks [drinks.continent== 'South America'])
+# selection: select a portion of the DataFrame using the index 
+print(drinks.loc[23,'beer_servings'])
+# set an existing column as the index
+print(drinks.set_index('country', inplace=True))
+print(drinks.head())
+# you can interact with any DataFrame using its index and columns
+print(drinks.describe().loc['25%', 'beer_servings'])
+# access the Series index
+print(drinks.continent.value_counts().index)
+# access the Series values
+print(drinks.continent.value_counts().values)
+# any Series can be sorted by its values
+print(drinks.continent.value_counts().sort_values())
+people = pd.Series([3000000, 85000], index=['Albania', 'Andorra'],
+name='population')
+# concatenate the 'drinks' DataFrame with the 'population' Series
+(aligns by the index)
+print(pd.concat([drinks, people], axis=1).head())
+
+
+
+
+
